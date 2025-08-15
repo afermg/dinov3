@@ -42,7 +42,7 @@
       rec {
         packages = {
           # xformers = pkgs.python312.pkgs.callPackage ./nix/xformers.nix { };
-          dinov2 = pkgs.python312.pkgs.callPackage ./nix/dinov2.nix { };
+          dinov3 = pkgs.python312.pkgs.callPackage ./nix/dinov3.nix { };
         };
         devShells = {
           default =
