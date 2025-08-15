@@ -12,7 +12,8 @@
   torchmetrics,
   fvcore,
   iopath,
-  xformers,
+  # xformers,
+  transformers,
   submitit,
   # Extras
   mmcv,
@@ -46,7 +47,7 @@ buildPythonPackage {
     torchmetrics
     fvcore
     iopath
-    xformers
+    # xformers
     submitit
     # extras
     # mmcv
@@ -55,6 +56,7 @@ buildPythonPackage {
     scikit-learn
     regex
     ftfy
+    transformers
   ];
 
   pythonImportsCheck = [
