@@ -18,6 +18,9 @@
   mmcv,
   # Server,
   datasets,
+  scikit-learn,
+  regex,
+  ftfy,
 }:
 buildPythonPackage {
   pname = "dinov3";
@@ -49,6 +52,9 @@ buildPythonPackage {
     # mmcv
     # Server
     datasets
+    scikit-learn
+    regex
+    ftfy
   ];
 
   pythonImportsCheck = [
