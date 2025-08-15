@@ -11,9 +11,9 @@ Timothée Darcet, Théo Moutakanni, Leonel Sentana, Claire Roberts, <br/>
 Andrea Vedaldi, Jamie Tolan, John Brandt, Camille Couprie, <br/>
 Julien Mairal, Hervé Jégou, Patrick Labatut, Piotr Bojanowski
 
-[ :scroll: [`Paper`](https://ai.meta.com/research/publications/dinov3/)] [ :newspaper: [`Blog`](https://ai.meta.com/blog/dinov3-self-supervised-vision-model/)] [ :globe_with_meridians: [`Website`](https://ai.meta.com/dinov3/)] [ :book: [`BibTeX`](#citing-dinov3)]
+[ :scroll: [`Paper`](https://arxiv.org/abs/2508.10104)] [ :newspaper: [`Blog`](https://ai.meta.com/blog/dinov3-self-supervised-vision-model/)] [ :globe_with_meridians: [`Website`](https://ai.meta.com/dinov3/)] [ :book: [`BibTeX`](#citing-dinov3)]
 
-Reference PyTorch implementation and models for DINOv3. For details, see the **[DINOv3](https://ai.meta.com/research/publications/dinov3/)** paper.
+Reference PyTorch implementation and models for DINOv3. For details, see the **[DINOv3](https://arxiv.org/abs/2508.10104)** paper.
 
 ## Overview
 
@@ -722,12 +722,13 @@ See [contributing](CONTRIBUTING.md) and the [code of conduct](CODE_OF_CONDUCT.md
 If you find this repository useful, please consider giving a star :star: and citation :t-rex::
 
 ```
-@article{simeoni2025dinov3,
-  title = {{{DINOv3}}},
-  author = {Sim{\'e}oni, Oriane and Vo, Huy V. and Seitzer, Maximilian and Baldassarre, Federico and Oquab, Maxime and Jose, Cijo and Khalidov, Vasil and Szafraniec, Marc and Yi, Seungeun and Ramamonjisoa, Micha{\"e}l and Massa, Francisco and Haziza, Daniel and Wehrstedt, Luca and Wang, Jianyuan and Darcet, Timoth{\'e}e and Moutakanni, Th{\'e}o and Sentana, Leonel and Roberts, Claire and Vedaldi, Andrea and Tolan, Jamie and Brandt, John and Couprie, Camille and Mairal, Julien and J{\'e}gou, Herv{\'e} and Labatut, Patrick and Bojanowski, Piotr},
-  year = {2025},
-  month = aug,
-  url={https://ai.meta.com/research/publications/dinov3},
-  urldate = {2025-08-13},
+@misc{simeoni2025dinov3,
+  title={{DINOv3}},
+  author={Sim{\'e}oni, Oriane and Vo, Huy V. and Seitzer, Maximilian and Baldassarre, Federico and Oquab, Maxime and Jose, Cijo and Khalidov, Vasil and Szafraniec, Marc and Yi, Seungeun and Ramamonjisoa, Micha{\"e}l and Massa, Francisco and Haziza, Daniel and Wehrstedt, Luca and Wang, Jianyuan and Darcet, Timoth{\'e}e and Moutakanni, Th{\'e}o and Sentana, Leonel and Roberts, Claire and Vedaldi, Andrea and Tolan, Jamie and Brandt, John and Couprie, Camille and Mairal, Julien and J{\'e}gou, Herv{\'e} and Labatut, Patrick and Bojanowski, Piotr},
+  year={2025},
+  eprint={2508.10104},
+  archivePrefix={arXiv},
+  primaryClass={cs.CV},
+  url={https://arxiv.org/abs/2508.10104},
 }
 ```
