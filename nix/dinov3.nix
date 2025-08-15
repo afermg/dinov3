@@ -20,7 +20,7 @@
   datasets,
 }:
 buildPythonPackage {
-  pname = "dinov2";
+  pname = "dinov3";
   version = "0.3.2";
 
   src = ./..; # For local testing, add flag --impure when running
@@ -56,7 +56,7 @@ buildPythonPackage {
 
   meta = {
     description = "dinov2";
-    homepage = "https://github.com/afermg/dinov2";
+    homepage = "https://github.com/afermg/dinov3";
     license = lib.licenses.asl20;
   };
 }

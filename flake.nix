@@ -49,7 +49,7 @@
             let
               python_with_pkgs = (
                 python312.withPackages (pp: [
-                  packages.dinov2
+                  packages.dinov3
                 ])
               );
             in
