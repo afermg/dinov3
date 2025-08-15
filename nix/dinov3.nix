@@ -22,6 +22,7 @@
   scikit-learn,
   regex,
   ftfy,
+  matplotlib,
 }:
 buildPythonPackage {
   pname = "dinov3";
@@ -57,6 +58,7 @@ buildPythonPackage {
     regex
     ftfy
     transformers
+    matplotlib
   ];
 
   pythonImportsCheck = [
