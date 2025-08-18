@@ -23,6 +23,7 @@
   regex,
   ftfy,
   matplotlib,
+  scikit-image,
 }:
 buildPythonPackage {
   pname = "dinov3";
@@ -59,6 +60,7 @@ buildPythonPackage {
     ftfy
     transformers
     matplotlib
+    scikit-image
   ];
 
   pythonImportsCheck = [
