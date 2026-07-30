@@ -10,17 +10,15 @@
     nahual-flake.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs =
-    {
-      self,
-      nixpkgs,
-      flake-utils,
-      systems,
-      ...
-    }@inputs:
+  outputs = {
+    self,
+    nixpkgs,
+    flake-utils,
+    systems,
+    ...
+  } @ inputs:
     flake-utils.lib.eachDefaultSystem (
-      system:
-      let
+      system: let
         pkgs = import nixpkgs {
           system = system;
           config = {
@@ -39,31 +37,40 @@
           pkgs.glibc
           #pkgs.glibc.dev
         ];
-      in
-      with pkgs;
-      rec {
-        apps.default =
-          let
-            python_with_pkgs = python3.withPackages (pp: [
-              (inputs.nahual-flake.packages.${system}.nahual)
-              packages.dinov3
-            ]);
-            runServer = pkgs.writeScriptBin "runserver.sh" ''
-              #!${pkgs.bash}/bin/bash
-              ${python_with_pkgs}/bin/python ${self}/server.py ''${@:-"ipc:///tmp/dinov3.ipc"}
-            '';
-          in
-          {
-            type = "app";
-            program = "${runServer}/bin/runserver.sh";
-          };
-        packages = {
-          # xformers = pkgs.python312.pkgs.callPackage ./nix/xformers.nix { };
-          dinov3 = pkgs.python3.pkgs.callPackage ./nix/dinov3.nix { };
+        modelPackages = {
+          dinov3 = pkgs.python3.pkgs.callPackage ./nix/dinov3.nix {};
         };
-        devShells = {
-          default =
-            let
+        python_with_pkgs = pkgs.python3.withPackages (pp: [
+          (inputs.nahual-flake.packages.${system}.nahual)
+          modelPackages.dinov3
+        ]);
+        runServer = pkgs.writeScriptBin "nahual-dinov3" ''
+          #!${pkgs.bash}/bin/bash
+          exec ${python_with_pkgs}/bin/python ${self}/server.py "''${1:-tcp://0.0.0.0:5555}"
+        '';
+        serverApp = {
+          type = "app";
+          program = "${runServer}/bin/nahual-dinov3";
+        };
+      in
+        with pkgs; rec {
+          apps.default = serverApp;
+          packages =
+            modelPackages
+            // pkgs.lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+              oci-image = import ./nix/oci-image.nix {
+                inherit pkgs;
+                name = "dinov3";
+                title = "Nahual DINOv3";
+                description = "DINOv3 feature extraction served through Nahual";
+                source = "https://github.com/afermg/dinov3";
+                revision = self.rev or self.dirtyRev or "unknown";
+                server = runServer;
+                entrypoint = serverApp.program;
+              };
+            };
+          devShells = {
+            default = let
               python_with_pkgs = (
                 python3.withPackages (pp: [
                   (inputs.nahual-flake.packages.${system}.nahual)
@@ -71,32 +78,32 @@
                 ])
               );
             in
-            mkShell {
-              packages = [
-                python_with_pkgs
-                python3Packages.venvShellHook
-                pkgs.cudaPackages.cudatoolkit
-                pkgs.cudaPackages.cudnn
-              ];
-              currentSystem = system;
-              venvDir = "./.venv";
-              postVenvCreation = ''
-                unset SOURCE_DATE_EPOCH
-              '';
-              postShellHook = ''
-                unset SOURCE_DATE_EPOCH
-              '';
-              shellHook = ''
-                runHook venvShellHook
-                # PYTHONSAFEPATH=1 (Python 3.11+) keeps Python from prepending
-                # the script's directory (or cwd for python -c mode) to
-                # sys.path, which would otherwise let the in-tree dinov3/
-                # source dir shadow the nix-built package.
-                export PYTHONSAFEPATH=1
-              '';
-            };
-        };
-      }
+              mkShell {
+                packages = [
+                  python_with_pkgs
+                  python3Packages.venvShellHook
+                  pkgs.cudaPackages.cudatoolkit
+                  pkgs.cudaPackages.cudnn
+                ];
+                currentSystem = system;
+                venvDir = "./.venv";
+                postVenvCreation = ''
+                  unset SOURCE_DATE_EPOCH
+                '';
+                postShellHook = ''
+                  unset SOURCE_DATE_EPOCH
+                '';
+                shellHook = ''
+                  runHook venvShellHook
+                  # PYTHONSAFEPATH=1 (Python 3.11+) keeps Python from prepending
+                  # the script's directory (or cwd for python -c mode) to
+                  # sys.path, which would otherwise let the in-tree dinov3/
+                  # source dir shadow the nix-built package.
+                  export PYTHONSAFEPATH=1
+                '';
+              };
+          };
+        }
     );
 }
 # export CUDA_PATH=${pkgs.cudaPackages.cudatoolkit}

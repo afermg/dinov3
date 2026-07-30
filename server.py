@@ -9,6 +9,7 @@ or:
     python server.py ipc:///tmp/dinov3.ipc
 """
 
+import importlib
 import os
 import sys
 from functools import partial
@@ -62,19 +63,28 @@ def setup(
 
     # Skip torch.hub.load — it spawns a subprocess for the local repo lookup
     # which can stall under nix. Import the factory directly instead.
-    from dinov3.hub import backbones, classifiers, segmentors, depthers, dinotxt
+    from dinov3.hub import backbones
+
+    # Dense and text heads have additional optional dependencies and may read
+    # credentials while importing. Resolve backbones first and import those
+    # modules only when the requested name is not a backbone.
     factories = {}
-    for mod in (backbones, classifiers, segmentors, depthers, dinotxt):
-        for name in getattr(mod, "__all__", []) + [
-            n for n in dir(mod) if n.startswith("dinov3_")
-        ]:
-            fn = getattr(mod, name, None)
+
+    def register_factories(module):
+        for name in getattr(module, "__all__", []) + [n for n in dir(module) if n.startswith("dinov3_")]:
+            fn = getattr(module, name, None)
             if callable(fn):
                 factories[name] = fn
+
+    register_factories(backbones)
     if model_name not in factories:
-        raise ValueError(
-            f"Unknown model {model_name!r}; available: {sorted(factories)[:8]}..."
-        )
+        for module_name in ("classifiers", "segmentors", "depthers", "dinotxt"):
+            try:
+                register_factories(importlib.import_module(f"dinov3.hub.{module_name}"))
+            except Exception:
+                pass
+    if model_name not in factories:
+        raise ValueError(f"Unknown model {model_name!r}; available: {sorted(factories)[:8]}...")
     loaded_model = factories[model_name](**kwargs).to(torch_device)
     loaded_model.eval()
 
@@ -111,9 +121,7 @@ def process(
     Final shape is ``(N, D · ceil(C/3))``.
     """
     if pixels.ndim != 5:
-        raise ValueError(
-            f"Expected NCZYX (5D) array, got shape {pixels.shape}"
-        )
+        raise ValueError(f"Expected NCZYX (5D) array, got shape {pixels.shape}")
     _, _, _, *input_yx = pixels.shape
     validate_input_shape(input_yx, expected_tile_size)
 
