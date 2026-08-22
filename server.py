@@ -94,6 +94,7 @@ def setup(
     return processor, info
 
 
+@torch.inference_mode()
 def process(
     pixels: numpy.ndarray,
     processor: Callable,
@@ -121,8 +122,7 @@ def process(
     outs = []
     for chunk in chunks:
         torch_tensor = torch.from_numpy(chunk.copy()).float().to(device)
-        with torch.no_grad():
-            result = processor(torch_tensor)
+        result = processor(torch_tensor)
         # Some hub entrypoints return a dict / tuple — pick the cls token.
         if isinstance(result, dict):
             for k in ("x_norm_clstoken", "cls", "cls_token", "logits"):
@@ -138,7 +138,7 @@ def process(
 
 
 async def main():
-    with pynng.Rep0(listen=address, recv_timeout=300) as sock:
+    with pynng.Rep0(listen=address, recv_timeout=300_000) as sock:
         print(f"DINOv3 server listening on {address}")
         async with trio.open_nursery() as nursery:
             responder_curried = partial(responder, setup=setup)
